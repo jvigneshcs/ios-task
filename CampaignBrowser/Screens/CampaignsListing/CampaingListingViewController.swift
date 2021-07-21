@@ -11,6 +11,17 @@ class CampaignListingViewController: UIViewController {
     private let disposeBag = DisposeBag()
 
     private let imageService = ServiceLocator.instance.imageService
+    
+    private let campaignFlowLayout: CampaignFlowLayout = {
+        let flowLayout = CampaignFlowLayout()
+        flowLayout.sectionInsetReference = .fromContentInset // .fromContentInset is default
+        flowLayout.estimatedItemSize = UICollectionViewFlowLayout.automaticSize
+        flowLayout.minimumInteritemSpacing = 0
+        flowLayout.minimumLineSpacing = 0
+        flowLayout.sectionInset = .zero
+        
+        return flowLayout
+    }()
 
     @IBOutlet
     private(set) weak var typedView: CampaignListingView!
@@ -19,6 +30,8 @@ class CampaignListingViewController: UIViewController {
         super.viewDidLoad()
 
         assert(typedView != nil)
+        self.typedView.collectionViewLayout = self.campaignFlowLayout
+        self.typedView.contentInsetAdjustmentBehavior = .always
     }
 
     override func viewWillAppear(_ animated: Bool) {
