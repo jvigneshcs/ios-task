@@ -22,6 +22,24 @@ class CampaignListingViewController: UIViewController {
         
         return flowLayout
     }()
+    
+    @available (iOS 13.0, *)
+    private var compositionalLayout: UICollectionViewCompositionalLayout {
+        let size = NSCollectionLayoutSize(
+            widthDimension: NSCollectionLayoutDimension.fractionalWidth(1),
+            heightDimension: NSCollectionLayoutDimension.estimated(450)
+        )
+        let item = NSCollectionLayoutItem(layoutSize: size)
+        let group = NSCollectionLayoutGroup.horizontal(layoutSize: size,
+                                                       subitem: item,
+                                                       count: 1)
+        
+        let section = NSCollectionLayoutSection(group: group)
+        section.contentInsets = .zero
+        section.interGroupSpacing = 0
+        
+        return UICollectionViewCompositionalLayout(section: section)
+    }
 
     @IBOutlet
     private(set) weak var typedView: CampaignListingView!
@@ -30,8 +48,15 @@ class CampaignListingViewController: UIViewController {
         super.viewDidLoad()
 
         assert(typedView != nil)
-        self.typedView.collectionViewLayout = self.campaignFlowLayout
-        self.typedView.contentInsetAdjustmentBehavior = .always
+        if #available(iOS 14.0, *) {
+            var config = UICollectionLayoutListConfiguration(appearance: .plain)
+            config.showsSeparators = false
+            self.typedView.collectionViewLayout = UICollectionViewCompositionalLayout.list(using: config)
+        } else if #available(iOS 13.0, *) {
+            self.typedView.collectionViewLayout = self.compositionalLayout
+        } else {
+            self.typedView.collectionViewLayout = self.campaignFlowLayout
+        }
     }
 
     override func viewWillAppear(_ animated: Bool) {
